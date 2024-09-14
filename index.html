@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <style>
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hello, welcome to the To-Do App!</h1>
+
+    <h3>Add tasks to your to-do list:</h3>
+    <input id="taskInput" placeholder="Add tasks" />
+    <button id="addButton">Add</button>
+
+    <h3>Your To-Do List:</h3>
+    <ul id="todoList">
+        <!-- To-do items will appear here -->
+    </ul>
+
+    <script>
+        // Array to store todo items
+        let todos = [];
+
+        // Reference to input field and button
+        const input = document.getElementById('taskInput');
+        const addButton = document.getElementById('addButton');
+        const todoList = document.getElementById('todoList');
+
+        // Fetch todos from the server (API call)
+        function fetchTodos() {
+            fetch('/api/todos')
+                .then(response => response.json())
+                .then(data => {
+                    todos = data; // Update local todos array
+                    displayTodos(); // Update the UI
+                })
+                .catch(error => console.error('Error fetching todos:', error));
+        }
+
+        // Function to add a task to the list
+        function addTask() {
+
+            const task = input.value.trim();  // Get input value
+            console.log(task);
+            
+            const newTodo = { task, completed: false };  // New todo object
+            
+            if (task) {  // Only add if input is not empty
+                // Send POST request to the server to add the new todo
+                fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newTodo)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        todos = data.todos;  // Update the local todos array with the updated list
+                        displayTodos();  // Update the UI
+                        input.value = '';  // Clear the input field
+                    })
+                    .catch(error => console.error('Error adding todo:', error));
+            }
+        }
+
+
+        // Function to display tasks in the list
+        function displayTodos() {
+            todoList.innerHTML = '';  // Clear current list
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.textContent = todo.task;
+                todoList.appendChild(li);
+            });
+        }
+
+        // Add click event to the Add button
+        addButton.addEventListener('click', addTask);
+
+        // Optional: Add task when pressing Enter in the input field
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Fetch todos on page load
+        fetchTodos();
+    </script>
+
+</body>
+
+</html>

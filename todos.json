@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "task": "Buy groceries",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "task": "Read a book",
+    "completed": false
+  },
+  {
+    "task": "Task1",
+    "completed": false
+  }
+]
